@@ -3,6 +3,9 @@ Code Highlighter is a JavaScript library that makes it easy to display and synta
 
 ## [Doc in HTML](https://xaliphostes.github.io/code-highlighter/)
 
+## Example
+See this [**file**](example.html) where a cpp code is rendered from a file, and the other one is written in the html code.
+
 It provides two main components:
 
 ## CodeFromFile
