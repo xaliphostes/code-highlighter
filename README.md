@@ -1,5 +1,9 @@
 # Code Highlighter
-Code Highlighter is a JavaScript library that makes it easy to display and syntax highlight code snippets on your web pages. It provides two main components:
+Code Highlighter is a JavaScript library that makes it easy to display and syntax highlight code snippets on your web pages.
+
+## [Doc in HTML](https://xaliphostes.github.io/code-highlighter/)
+
+It provides two main components:
 
 ## CodeFromFile
 A custom HTML element that loads code from external files and applies syntax highlighting.
