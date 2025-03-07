@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Highlighter Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/javascript.min.js"></script>
+    <script src="code-highlighter.js"></script>
+
+    <style>
+        :root {
+            --primary: #5468FF;
+            --primary-dark: #3D4EDF;
+            --secondary: #6EE7B7;
+            --secondary-dark: #34D399;
+            --dark: #111827;
+            --gray-dark: #374151;
+            --gray: #6B7280;
+            --gray-light: #E5E7EB;
+            --light: #F9FAFB;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            padding: 0;
+            margin: 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 5rem 0 3rem;
+            text-align: center;
+            position: relative;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            margin-bottom: 4rem;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,75 C75,85 25,85 0,75 Z" fill="%23ffffff10"/></svg>') no-repeat center/cover;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.025em;
+        }
+
+        .header-content p {
+            font-size: 1.25rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: white;
+            color: var(--primary);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            padding: 2rem 0 4rem;
+        }
+
+        .nav-container {
+            background-color: white;
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 1rem;
+            z-index: 100;
+        }
+
+        .nav {
+            display: flex;
+            overflow-x: auto;
+            padding: 0.5rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav a {
+            color: var(--gray-dark);
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            white-space: nowrap;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            background-color: var(--gray-light);
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray-light);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--gray-dark);
+            margin: 2rem 0 1rem;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+            color: var(--gray-dark);
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            background-color: var(--gray-light);
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+        }
+
+        pre {
+            background-color: var(--dark);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            color: inherit;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-top: 4px solid var(--primary);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card h3 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+
+        .feature-card p {
+            margin-bottom: 0;
+        }
+
+        .demo-container {
+            margin: 2rem 0;
+            border: 1px solid var(--gray-light);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .demo-header {
+            background-color: var(--gray-light);
+            padding: 0.75rem 1rem;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .demo-content {
+            padding: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th,
+        td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--gray-dark);
+            background-color: var(--gray-light);
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .note {
+            background-color: #e0f2ff;
+            border-left: 4px solid var(--primary);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .note strong {
+            color: var(--primary-dark);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning {
+            background-color: #fff8e6;
+            border-left: 4px solid var(--warning);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .warning strong {
+            color: var(--warning);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .tab-container {
+            margin: 2rem 0;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--gray-light);
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 1rem 0;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        footer {
+            background-color: var(--gray-dark);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        footer p {
+            color: var(--gray-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        ul,
+        ol {
+            margin: 1rem 0 1.5rem 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .annotation {
+            display: inline-block;
+            padding: 0.2em 0.4em;
+            margin: 0 0.2em;
+            font-size: 0.8em;
+            font-weight: 600;
+            border-radius: 0.25rem;
+            vertical-align: middle;
+        }
+
+        .required {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .optional {
+            background-color: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .example-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .example-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .example-header {
+            background-color: var(--gray-dark);
+            color: white;
+            padding: 0.75rem 1rem;
+            font-weight: 500;
+        }
+
+        .example-content {
+            padding: 1.5rem;
+        }
+
+        .api-method {
+            border: 1px solid var(--gray-light);
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .api-method-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+        }
+
+        .api-method-content {
+            padding: 1.5rem;
+            background-color: white;
+        }
+
+        @media (max-width: 768px) {
+            .header-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .header-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container header-content">
+            <h1>Code Highlighter</h1>
+            <p>A powerful and flexible JavaScript library for code syntax highlighting and embedding in web pages</p>
+            <div class="header-buttons">
+                <!-- <a href="#quick-start" class="btn btn-primary">Quick Start</a> -->
+                <a href="#examples" class="btn btn-secondary">See Examples</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="nav-container">
+            <nav class="nav">
+                <a href="#overview">Overview</a>
+                <a href="#installation">Installation</a>
+                <a href="#code-from-file">CodeFromFile</a>
+                <a href="#code-block-manager">CodeBlockManager</a>
+                <a href="#examples">Examples</a>
+                <a href="#styling">Styling</a>
+                <a href="#api">API Reference</a>
+            </nav>
+        </div>
+
+        <main class="main-content">
+            <section id="overview" class="section">
+                <h2>Overview</h2>
+                <p>Code Highlighter is a JavaScript library that makes it easy to display and syntax highlight code
+                    snippets on your web pages. It provides two main components:</p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>CodeFromFile</h3>
+                        <p>A custom HTML element that loads code from external files and applies syntax highlighting.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>CodeBlockManager</h3>
+                        <p>A utility that manages inline code blocks defined within script tags in your HTML.</p>
+                    </div>
+                </div>
+
+                <p>Both components use <a href="https://highlightjs.org/" target="_blank">highlight.js</a> for syntax
+                    highlighting, ensuring that your code looks beautiful with proper language-specific coloring.</p>
+            </section>
+
+            <section id="installation" class="section">
+                <h2>Installation</h2>
+                <p>To use Code Highlighter in your project, follow these steps:</p>
+
+                <h3>1. Include Required Scripts</h3>
+                <pre><code>&lt;!-- Include highlight.js core library --&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- Include languages you need (e.g., for C++ and JavaScript) --&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/javascript.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- Include the Code Highlighter script --&gt;
+&lt;script src="code-highlighter.js"&gt;&lt;/script&gt;</code></pre>
+
+                <div class="note">
+                    <strong>Note</strong>
+                    <p>You only need to include language-specific scripts for the languages you plan to highlight. See
+                        the <a href="https://highlightjs.org/static/demo/" target="_blank">highlight.js demo</a> for a
+                        list of supported languages.</p>
+                </div>
+            </section>
+
+            <section id="code-from-file" class="section">
+                <h2>CodeFromFile Component</h2>
+                <p>The <code>&lt;code-from-file&gt;</code> custom element lets you load and display code from external
+                    files with syntax highlighting.</p>
+
+                <h3>Basic Usage</h3>
+                <p>To display code from an external file, use the custom element with the <code>src</code> attribute:
+                </p>
+
+                <pre><code>&lt;code-from-file src="./path/to/example.js"&gt;&lt;/code-from-file&gt;</code></pre>
+
+                <h3>Attributes</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Description</th>
+                            <th>Required</th>
+                            <th>Default</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>src</code></td>
+                            <td>Path to the code file to load</td>
+                            <td><span class="annotation required">Required</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><code>language</code></td>
+                            <td>Programming language for syntax highlighting</td>
+                            <td><span class="annotation optional">Optional</span></td>
+                            <td>cpp</td>
+                        </tr>
+                        <tr>
+                            <td><code>highlight-lines</code></td>
+                            <td>Line numbers to highlight (comma-separated, ranges allowed)</td>
+                            <td><span class="annotation optional">Optional</span></td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Highlighting Specific Lines</h3>
+                <p>You can highlight specific lines in your code using the <code>highlight-lines</code> attribute:</p>
+
+                <pre><code>&lt;code-from-file 
+  src="./code/algorithm.cpp" 
+  language="cpp" 
+  highlight-lines="5-10,12,15"&gt;
+&lt;/code-from-file&gt;</code></pre>
+
+                <p>The <code>highlight-lines</code> attribute accepts a comma-separated list of line numbers or ranges:
+                </p>
+                <ul>
+                    <li><code>highlight-lines="5"</code> - Highlights line 5</li>
+                    <li><code>highlight-lines="5-10"</code> - Highlights lines 5 through 10 inclusive</li>
+                    <li><code>highlight-lines="5,7,9-12"</code> - Highlights lines 5, 7, and 9 through 12</li>
+                </ul>
+            </section>
+
+            <section id="code-block-manager" class="section">
+                <h2>CodeBlockManager</h2>
+                <p>The CodeBlockManager lets you define code blocks directly in your HTML using script tags and renders
+                    them with syntax highlighting.</p>
+
+                <h3>Basic Usage</h3>
+                <p>Define a code block using a script tag with <code>type="code-block"</code> and specify where to
+                    render it:</p>
+
+                <pre><code>&lt;script type="code-block" language="javascript" target="example1"&gt;
+function calculateSum(a, b) {
+    return a + b;
+}
+
+// Call the function
+const result = calculateSum(5, 10);
+console.log(result);  // Outputs: 15
+&lt;/script&gt;
+
+&lt;div id="example1"&gt;&lt;/div&gt;</code></pre>
+
+                <h3>Attributes</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Description</th>
+                            <th>Required</th>
+                            <th>Default</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>type</code></td>
+                            <td>Must be "code-block"</td>
+                            <td><span class="annotation required">Required</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><code>language</code></td>
+                            <td>Programming language for syntax highlighting</td>
+                            <td><span class="annotation optional">Optional</span></td>
+                            <td>cpp</td>
+                        </tr>
+                        <tr>
+                            <td><code>target</code></td>
+                            <td>ID of the element where the code should be rendered</td>
+                            <td><span class="annotation optional">Optional</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><code>highlight-lines</code></td>
+                            <td>Line numbers to highlight (comma-separated, ranges allowed)</td>
+                            <td><span class="annotation optional">Optional</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>Custom ID for the code block (for programmatic access)</td>
+                            <td><span class="annotation optional">Optional</span></td>
+                            <td>Auto-generated</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="note">
+                    <strong>Note</strong>
+                    <p>If you don't specify a custom ID, one will be automatically generated for the code block.</p>
+                </div>
+
+                <h3>Using the JavaScript API</h3>
+                <p>You can also add code blocks programmatically:</p>
+
+                <div id="register"></div>
+                
+            </section>
+
+            <section id="examples" class="section">
+                <h2>Examples</h2>
+
+                <div class="example-grid">
+                    <div class="example-card">
+                        <div class="example-header">Loading From External File</div>
+                        <div class="example-content">
+                            <pre><code>&lt;h2&gt;JavaScript Example&lt;/h2&gt;
+&lt;code-from-file 
+  src="./code/example.js"&gt;
+&lt;/code-from-file&gt;</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="example-card">
+                        <div class="example-header">Inline with Line Highlighting</div>
+                        <div class="example-content">
+                            <pre><code>&lt;script type="code-block" 
+  language="cpp" 
+  target="cpp-example" 
+  highlight-lines="2,5-7"&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; numbers = {1, 2, 3, 4, 5};
+    
+    for (const auto&amp; num : numbers) {
+        std::cout &lt;&lt; num &lt;&lt; " ";
+    }
+    
+    return 0;
+}
+&lt;/script&gt;
+
+&lt;div id="cpp-example"&gt;&lt;/div&gt;</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="example-card">
+                        <div class="example-header">Multiple Languages</div>
+                        <div class="example-content">
+                            <pre><code>&lt;div class="code-tabs"&gt;
+  &lt;script type="code-block" language="html" target="html-code"&gt;
+&lt;div class="container"&gt;
+    &lt;h1&gt;Hello World&lt;/h1&gt;
+&lt;/div&gt;
+  &lt;/script&gt;
+  
+  &lt;script type="code-block" language="css" target="css-code"&gt;
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+  &lt;/script&gt;
+  
+  &lt;div&gt;
+    &lt;button onclick="showTab('html')"&gt;HTML&lt;/button&gt;
+    &lt;button onclick="showTab('css')"&gt;CSS&lt;/button&gt;
+  &lt;/div&gt;
+  
+  &lt;div id="html-code" class="tab-content"&gt;&lt;/div&gt;
+  &lt;div id="css-code" class="tab-content"&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="styling" class="section">
+                <h2>Styling</h2>
+
+                <p>The CodeFromFile component uses Shadow DOM to encapsulate its styles. The CodeBlockManager applies
+                    minimal styling to the code blocks.</p>
+
+                <h3>Custom CSS for CodeBlockManager</h3>
+                <p>You can customize the appearance of code blocks managed by CodeBlockManager with CSS:</p>
+
+                <div id="custom-css"></div>
+
+                <h3>Highlight.js Themes</h3>
+                <p>You can change the syntax highlighting theme by including a different highlight.js theme CSS:</p>
+
+                <pre><code>&lt;!-- Use a different highlight.js theme -->
+&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"&gt;</code></pre>
+
+                <p>Other popular themes include:</p>
+                <ul>
+                    <li>github.min.css (default)</li>
+                    <li>atom-one-dark.min.css</li>
+                    <li>dracula.min.css</li>
+                    <li>nord.min.css</li>
+                    <li>monokai.min.css</li>
+                </ul>
+            </section>
+
+            <section id="api" class="section">
+                <h2>API Reference</h2>
+
+                <h3>CodeBlockManager API</h3>
+
+                <div class="api-method">
+                    <div class="api-method-header">registerBlock(code, options)</div>
+                    <div class="api-method-content">
+                        <p>Registers a new code block with the manager.</p>
+                        <h4>Parameters</h4>
+                        <ul>
+                            <li><code>code</code> (string): The source code content</li>
+                            <li><code>options</code> (object): Additional options
+                                <ul>
+                                    <li><code>id</code> (string, optional): Custom ID to use</li>
+                                    <li><code>language</code> (string, optional): Programming language for syntax
+                                        highlighting</li>
+                                    <li><code>elementId</code> (string, optional): ID of the element to render the code
+                                        into</li>
+                                    <li><code>highlightLines</code> (string, optional): Comma-separated list of line
+                                        numbers to highlight</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <h4>Returns</h4>
+                        <p>String: The ID of the registered block</p>
+                        <h4>Example</h4>
+                        <div id=""1></div>
+                    </div>
+                </div>
+
+                <div class="api-method">
+                    <div class="api-method-header">registerBlock(code, options)</div>
+                    <div class="api-method-content">
+                        <p>Registers a new code block with the manager.</p>
+                        <h4>Parameters</h4>
+                        <ul>
+                            <li><code>code</code> (string): The source code content</li>
+                            <li><code>options</code> (object): Additional options
+                                <ul>
+                                    <li><code>id</code> (string, optional): Custom ID to use</li>
+                                    <li><code>language</code> (string, optional): Programming language for syntax
+                                        highlighting</li>
+                                    <li><code>elementId</code> (string, optional): ID of the element to render the code
+                                        into</li>
+                                    <li><code>highlightLines</code> (string, optional): Comma-separated list of line
+                                        numbers to highlight</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <h4>Returns</h4>
+                        <p>String: The ID of the registered block</p>
+                        <h4>Example</h4>
+                        <div id="ex2"></div>
+                    </div>
+                </div>
+
+                <div class="api-method">
+                    <div class="api-method-header">renderToElement(id, element)</div>
+                    <div class="api-method-content">
+                        <p>Renders a code block to a specific element.</p>
+                        <h4>Parameters</h4>
+                        <ul>
+                            <li><code>id</code> (string): ID of the code block to render</li>
+                            <li><code>element</code> (HTMLElement): Element to render the code into</li>
+                        </ul>
+                        <h4>Example</h4>
+                        <div id="ex1"></div>
+                    </div>
+                </div>
+
+                <div class="api-method">
+                    <div class="api-method-header">renderAll()</div>
+                    <div class="api-method-content">
+                        <p>Renders all code blocks to their corresponding elements.</p>
+                        <h4>Example</h4>
+                        <div id="ex4"></div>
+                    </div>
+                </div>
+
+                <div class="api-method">
+                    <div class="api-method-header">getBlock(id)</div>
+                    <div class="api-method-content">
+                        <p>Gets a code block by ID.</p>
+                        <h4>Parameters</h4>
+                        <ul>
+                            <li><code>id</code> (string): ID of the code block</li>
+                        </ul>
+                        <h4>Returns</h4>
+                        <p>Object: The code block or null if not found</p>
+                        <h4>Example</h4>
+                        <div id="ex5"></div>
+                    </div>
+                </div>
+
+                <div class="api-method">
+                    <div class="api-method-header">getCode(id)</div>
+                    <div class="api-method-content">
+                        <p>Gets the source code for a block by ID.</p>
+                        <h4>Parameters</h4>
+                        <ul>
+                            <li><code>id</code> (string): ID of the code block</li>
+                        </ul>
+                        <h4>Returns</h4>
+                        <p>String: The source code or null if not found</p>
+                        <h4>Example</h4>
+                        <div id="ex6"></div>
+                    </div>
+                </div>
+
+                <div class="api-method">
+                    <div class="api-method-header">findBlockByTargetId(targetId)</div>
+                    <div class="api-method-content">
+                        <p>Finds a code block by its target element ID.</p>
+                        <h4>Parameters</h4>
+                        <ul>
+                            <li><code>targetId</code> (string): Target element ID</li>
+                        </ul>
+                        <h4>Returns</h4>
+                        <p>String: The ID of the code block or null if not found</p>
+                        <h4>Example</h4>
+                        <div id="ex7"></div>
+                    </div>
+                </div>
+
+                <h2 id="codefromfile-api">CodeFromFile API</h2>
+                <p>The CodeFromFile custom element supports these attributes that you can set directly in HTML:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>JavaScript Property</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>src</td>
+                            <td>element.setAttribute('src', '...')</td>
+                            <td>Path to the code file to load</td>
+                        </tr>
+                        <tr>
+                            <td>language</td>
+                            <td>element.setAttribute('language', '...')</td>
+                            <td>Programming language for syntax highlighting</td>
+                        </tr>
+                        <tr>
+                            <td>highlight-lines</td>
+                            <td>element.setAttribute('highlight-lines', '...')</td>
+                            <td>Line numbers to highlight</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Using CodeFromFile Programmatically</h3>
+                <p>You can create and configure CodeFromFile elements dynamically:</p>
+                <div id="ex8"></div>
+
+                <div class="note">
+                    <strong>Note</strong>
+                    <p>Changes to attributes will trigger the element to reload and re-render the code.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>Code Highlighter Documentation - A powerful and flexible JavaScript library for code syntax highlighting
+                and embedding in web pages</p>
+        </div>
+    </footer>
+
+    <script type="code-block" language="js" target="register">
+        // Register a code block
+        const id = codeBlockManager.registerBlock(`
+            function hello() {
+            console.log("Hello, world!");
+        }`, {
+            language: "javascript",
+            elementId: "hello-example",
+            highlightLines: "2"
+        });
+
+        // Render all code blocks
+        codeBlockManager.renderAll();
+    </script>
+
+    <script type="code-block" language="css" target="custom-css">
+        /* Customize code containers */
+        .code-container {
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Style the pre element */
+        .code-container pre {
+            margin: 0;
+            padding: 1rem;
+            background-color: #1e293b;
+        }
+
+        /* Customize line highlighting */
+        .line-highlight {
+            background-color: rgba(255, 236, 0, 0.2) !important;
+        }
+    </script>
+
+    <script type="code-block" language="js" target="ex1">
+        const blockId = codeBlockManager.registerBlock(
+            "console.log('Hello, world!');",
+            {
+                language: "javascript",
+                elementId: "example-output"
+            }
+        );
+    </script>
+
+    <script type="code-block" language="js" target="ex2">
+        const blockId = codeBlockManager.registerBlock(
+            "console.log('Hello, world!');",
+            {
+                language: "javascript",
+                elementId: "example-output"
+            }
+        );
+    </script>
+
+    <script type="code-block" language="js" target="ex3">
+        const element = document.getElementById('output');
+        codeBlockManager.renderToElement(blockId, element);
+    </script>
+
+    <script type="code-block" language="js" target="ex4">
+        // After dynamically adding new script tags or code blocks
+        codeBlockManager.renderAll();
+    </script>
+
+    <script type="code-block" language="js" target="ex5">
+        const block = codeBlockManager.getBlock('example-code');
+        if (block) {
+            console.log(`Language: ${block.language}`);
+            console.log(`Code length: ${block.code.length}`);
+        }
+    </script>
+
+    <script type="code-block" language="js" target="ex6">
+        const code = codeBlockManager.getCode('example-code');
+        console.log(code);
+    </script>
+
+    <script type="code-block" language="js" target="ex7">
+        const blockId = codeBlockManager.findBlockByTargetId('output-div');
+        if (blockId) {
+            // Use the block ID for other operations
+            const code = codeBlockManager.getCode(blockId);
+        }
+    </script>
+
+    <script type="code-block" language="js" target="ex8">
+        // Create a new CodeFromFile element
+        const codeElement = document.createElement('code-from-file');
+
+        // Set attributes
+        codeElement.setAttribute('src', './examples/example.js');
+        codeElement.setAttribute('language', 'javascript');
+        codeElement.setAttribute('highlight-lines', '5-10,15');
+
+        // Add to the DOM
+        document.getElementById('container').appendChild(codeElement);
+    </script>
+</body>
+
+</html>
